@@ -22,6 +22,7 @@
     - [Linked Lists](#linked-lists)
     - [Stacks and Queues](#stacks-and-queues)
     - [Trees](#trees)
+- [Big O](#big-o)
 - [Conclusion](#conclusion)
 
 ## Memory Model
@@ -707,7 +708,126 @@ A tree is a collection of nodes connected by edges, with one node designated as 
   - **Pre-order**: Visit node, traverse left subtree, traverse right subtree.
   - **Post-order**: Traverse left subtree, traverse right subtree, visit node.
 
-## Conclusion
+### Big O
 
+Big O notation is used to describe the performance or complexity of an algorithm, specifically in terms of time (time complexity) and space (space complexity). It gives the upper bound of the complexity, helping to understand how the algorithm scales with the size of the input data.
+
+#### Common Big O Situations:
+
+- **O(1) - Constant Time**:
+    Operations that take the same amount of time regardless of the input size. For example, accessing any element in an array by index.
+
+    ```python
+    def get_first_element(my_list):
+        return my_list[0]
+    ```
+- **O(log n) - Logarithmic Time**:
+    Operations where the size of the input is reduced by a factor with each step. Binary search is a classic example, as it splits the search space in half each time.
+    ```python
+    def binary_search(array, target):
+    left, right = 0, len(array) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if array[mid] == target:
+            return mid
+        elif array[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+    ```
+
+- **O(n) - Linear Time**:
+    Operations that go through each input a single time. An example is finding the maximum item in an unsorted list.
+    
+
+#### Q: I want to implement a Queue using 2 Stacks, so here’s my code below.
+```python
+class Stack:
+    def __init__(self) -> None:
+        self._items = []
+
+    def is_empty(self) -> bool:
+        return len(self._items) == 0
+
+    def push(self, item: Any) -> None:
+        self._items.append(item)
+
+    def pop(self) -> Any:
+        if not self.is_empty():
+            return self._items.pop()
+        else:
+            return None
+
+class QueueFromStacks:
+    def __init__(self) -> None:
+        self._stack1 = Stack()
+        self._stack2 = Stack()
+
+    def is_empty(self) -> bool:
+        return self._stack1.is_empty() and self._stack2.is_empty()
+
+    def enqueue(self, item: Any) -> None:
+        while not self._stack1.is_empty():
+            self._stack2.push(self._stack1.pop())
+            
+        self._stack2.push(item)
+
+        while not self._stack2.is_empty():
+            self._stack1.push(self._stack2.pop())
+
+    def dequeue(self) -> Any:
+        if self._stack1.is_empty():
+            return None
+        return self._stack1.pop()
+```
+1. Are my Stack and QueueFromStacks implementations correct? If not, fix the bug.
+2. What is the Big-O worst case running time for enqueue() and dequeue() for QueueFromStacks.
+3. There is a better way to implement a Queue using 2 Stacks. Write this better Queue implementation.
+4. What is the Big-O worst case running time for enqueue() and dequeue() for this better implementation.
+
+A: 
+1. no bug 
+2. enqueue():O(n), dequeue():O(1)
+    ```python
+    def enqueue(self, item: Any) -> None:
+         # n times
+        while not self._stack1.is_empty():
+            # 2 steps
+            self._stack2.push(self._stack1.pop())
+        
+        # 1 step
+        self._stack2.push(item)
+        
+        # n + 1 times 
+        while not self._stack2.is_empty():
+            # 2 times
+            self._stack1.push(self._stack2.pop())
+        # total: 2n + 1 + 2(n + 1)
+        # O(n)
+
+    def dequeue(self) -> Any:
+        # 1 step
+        if self._stack1.is_empty():
+            return None
+        # 1 step
+        return self._stack1.pop()
+        # total: 1 + 1
+        # O(1)
+    ```
+3. better way:
+    ```python
+    def enqueue(self, item: Any) -> None:
+        self._stack1.push(item)
+
+    def dequeue(self) -> Any:
+        if self._stack2.is_empty():
+            while not self._stack1.is_empty():
+                self._stack2.push(self_stack1.pop())
+        return self._stack2.pop()
+    ```
+4. better way enqueue(): O(1), dequeue():O(n)
+
+## Conclusion
 
 
