@@ -14,6 +14,8 @@
     - [Representation Invariant (RI)](#representation-invariant-(ri))
     - [Special Methods](#special-methods)
 - [Exception Handling](#exception-handling)
+    - [Common Python Errors](#common-python-errors)
+    - [Try Module](#try-module)
 - [Recursion](#recursion)
 - [Sorting Algorithms](#sorting-algorithms)
     - [Merge Sort](#merge-sort)
@@ -24,6 +26,7 @@
     - [Trees](#trees)
 - [Big O](#big-o)
 - [Conclusion](#conclusion)
+- [Refrence](#refrence)
 
 ## Memory Model
 ### Variables
@@ -86,6 +89,37 @@ A: No, the code does not behave correctly. The function recursively calls itself
     + For example, Python pre-creates instances of numbers `1~256` in memory, and when used, Python directly uses these pre-created instances of numbers.
 + `lst.extend([1,2,3])` is equivalent to `lst += [1,2,3]`
     + Both do not change the ID of `lst`
+Q: what is actual mutated value of q if initial value of q is `[1, 2, 3, 4]`:
+```python
+def reverse_if_descending(q: Queue) -> None:
+    """Reverse <q> if needed, such that its elements will be dequeued in
+    ascending order (smallest to largest).
+    Preconditions:
+    <q> contains more than 1 item
+    <q> is either in ascending or descending order
+    <q> has no duplicate items
+    """
+    first = q.dequeue()
+    second = q.dequeue()
+
+    s = Stack()
+    s.push(first)
+    s.push(second)
+    q2 = Queue()
+    q2.enqueue(first)
+    q2.enqueue(second)
+
+    while not q.is_empty():
+        q_item = q.dequeue()
+        s.push(q_item)
+        q2.enqueue(q_item)
+    if first > second:
+        while not s.is_empty():
+            q.enqueue(s.pop())
+    else:
+        q = q2
+```
+A: Empty, bcz after q = q2 is only changed the local variable (class)
 
 ## Object-Oriented Programming (OOP)
 Object-Oriented Programming (OOP) is a programming paradigm based on the concept of "objects", which can contain data and code: data in the form of fields (often known as attributes or properties), and code, in the form of procedures (often known as methods).
@@ -368,6 +402,66 @@ Exceptions are also objects, and the parent class of common exceptions is `Excep
     + `assert expression, [msg]` If the value of the expression is `False`, an assertion exception is thrown.
         + Example: `assert 0 == 1, "error msg"` This line of code will raise `AssertionError: error msg`
 
+### Common Python Errors
+#### SyntaxError
+Occurs when Python encounters incorrect syntax.
+
+```python
+# Example:
+print("Hello world"
+# Missing closing parenthesis causes SyntaxError.
+```
+#### NameError
+Happens when a variable is used before it has been defined or assigned.
+```python
+# Example:
+print(age)
+# 'age' is not defined before use, leading to NameError.
+```
+
+#### TypeError
+Arises when an operation is applied to an object of an inappropriate type.
+```python
+# Example:
+"2" + 2
+# Trying to add a string and an integer causes TypeError.
+```
+
+#### IndexError
+
+Occurs when trying to access an index that is out of the range of a list (or other sequence types).
+
+```python
+# Example:
+my_list = [1, 2, 3]
+print(my_list[3])
+# Lists are zero-indexed, so the index 3 is out of range, causing IndexError.
+```
+
+#### KeyError
+Happens when a dictionary does not have a specific key.
+```python
+# Example:
+my_dict = {"name": "Alice"}
+print(my_dict["age"])
+# 'age' key does not exist in my_dict, leading to KeyError.
+```
+
+#### AttributeError
+Arises when an attribute reference or assignment fails.
+```python
+# Example:
+"hello".push("world")
+# String objects do not have a 'push' method, leading to AttributeError.
+```
+#### ZeroDivisionError
+Happens when trying to divide by zero.
+```python
+# Example:
+1 / 0
+# Division by zero is undefined, causing ZeroDivisionError.
+```
+
 ### Try Module
 
 + The try module is divided into four parts: `try`, `except`, `else`, and `finally`
@@ -392,6 +486,44 @@ Exceptions are also objects, and the parent class of common exceptions is `Excep
         finally:
             # This code will be executed regardless of whether the code in the try block throws an exception
         ```
+Q: Read the code and answer: For each of the following, circle YES or NO to indicate whether or not it has a stack frame on the call stack at the moment when the error occurs.
+- `bumbly`
+- `mia`
+- `chirly`
+- `__main__`
+
+```python
+from typing import Dict
+
+def bumbly(d: Dict) -> int:
+    try:
+        spot = mia(d)
+        return d[spot]
+    except KeyError:
+        print('something went wrong')
+        return -1
+
+def mia(d: Dict) -> int:
+    try:
+        place = chirly(d)
+        return d[place]
+    except KeyError:
+        print('something went wrong')
+        return -1
+
+def chirly(d: Dict) -> int:
+    try:
+        return sum(d.values())
+    except KeyError:
+        print('something went wrong')
+        return -1
+
+if __name__ == '__main__':
+    d = {3: 8, 5: 32, 0: 2}
+    answer = bumbly(d)
+    print(answer)
+```
+A:`bumbly`, `mia`, and `__main__`
 
 ## Recursion
 Recursion is a programming technique where a function calls itself to solve a smaller part of the problem. It's like breaking down a task into smaller tasks of the same type.
@@ -473,7 +605,7 @@ def _merge(lst1: list, lst2: list) -> list:
 ```
 #### Benefits of Merge Sort:
 
-- It has a consistent running time of O(n log n).
+- It has a **consistent** running time of O(n log n), means nothing can change when input diffrent.
 - It works well with large data sets.
 - It is stable, which means that it preserves the input order of equal elements in the sorted output.
 
@@ -703,10 +835,63 @@ A tree is a collection of nodes connected by edges, with one node designated as 
 
 - **Binary Trees**: Each node has at most two children, commonly referred to as the left and right children.
 - **Binary Search Trees (BST)**: A binary tree where each node has a value greater than all values in its left subtree and less than all values in its right subtree.
+    - searching in a BST is efficient, typically O(log n) for a balanced tree.
+    - Insertion and Deletion: Know how to insert and delete nodes while maintaining the BST property. Insertion is relatively straightforward, but deletion can be more complex, especially when removing nodes with two children.
+    - Maximum Height: Like in a regular binary tree, the worst-case height of a BST is `n` (completely unbalanced tree).
+    - Minimum Height: The best-case height, which is `log2(n+1) - 1`, occurs when the BST is perfectly balanced.
 - **Traversal Methods**:
   - **In-order**: Traverse left subtree, visit node, traverse right subtree.
   - **Pre-order**: Visit node, traverse left subtree, traverse right subtree.
   - **Post-order**: Traverse left subtree, traverse right subtree, visit node.
+    ```python
+    class TreeNode:
+        def __init__(self, value):
+            self.value = value
+            self.left = None
+            self.right = None
+
+    # Example binary tree:
+    #       1
+    #      / \
+    #     2   3
+    #    / \
+    #   4   5
+
+    # Creating the tree:
+    root = TreeNode(1)
+    root.left = TreeNode(2)
+    root.right = TreeNode(3)
+    root.left.left = TreeNode(4)
+    root.left.right = TreeNode(5)
+
+    def in_order_traversal(node):
+        if node:
+            in_order_traversal(node.left)  # Traverse left subtree
+            print(node.value, end=' ')  # Visit node
+            in_order_traversal(node.right)  # Traverse right subtree
+
+    def pre_order_traversal(node):
+        if node:
+            print(node.value, end=' ')  # Visit node
+            pre_order_traversal(node.left)  # Traverse left subtree
+            pre_order_traversal(node.right)  # Traverse right subtree
+
+    def post_order_traversal(node):
+        if node:
+            post_order_traversal(node.left)  # Traverse left subtree
+            post_order_traversal(node.right)  # Traverse right subtree
+            print(node.value, end=' ')  # Visit node
+
+    # Example usage:
+    print("In-order Traversal:")
+    in_order_traversal(root)  # Outputs: 4 2 5 1 3
+
+    print("\nPre-order Traversal:")
+    pre_order_traversal(root)  # Outputs: 1 2 4 5 3
+
+    print("\nPost-order Traversal:")
+    post_order_traversal(root)  # Outputs: 4 5 2 3 1
+    ```
 
 ### Big O
 
@@ -739,7 +924,30 @@ Big O notation is used to describe the performance or complexity of an algorithm
 
 - **O(n) - Linear Time**:
     Operations that go through each input a single time. An example is finding the maximum item in an unsorted list.
-    
+
+- **O(n log n) - Linearithmic Time:**:
+    Common in sorting algorithms that work by dividing the data into smaller chunks, then sorting and merging them. **Merge sort** is an example.
+
+- **O(n^2) - Quadratic Time**:
+    Often seen in algorithms that involve nested iterations over the data set. A simple example is the bubble sort algorithm.
+    ```python
+    def bubble_sort(my_list):
+    n = len(my_list)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if my_list[j] > my_list[j+1]:
+                my_list[j], my_list[j+1] = my_list[j+1], my_list[j]
+    ```
+
+- **O(2^n) - Exponential Time**:
+    Algorithms where the growth doubles with each addition to the input data set. This is common in recursive calculations for Fibonacci numbers.
+    ```python
+    def fibonacci(n):
+    if n <= 1:
+        return n
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+    ```
 
 #### Q: I want to implement a Queue using 2 Stacks, so here’s my code below.
 ```python
@@ -829,5 +1037,7 @@ A:
 4. better way enqueue(): O(1), dequeue():O(n)
 
 ## Conclusion
+good luck everyone
 
-
+## Refrence
+- [Joey's UTM midterm review](https://github.com/Zhengyu-Joey-Wang/CSC148-Review-Notes/blob/master/Midterm1-Review/CSC148-Midterm1-review.md)
