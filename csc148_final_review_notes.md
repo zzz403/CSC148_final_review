@@ -1040,4 +1040,4 @@ A:
 good luck everyone
 
 ## Refrence
-- [Joey's UTM midterm review](https://github.com/Zhengyu-Joey-Wang/CSC148-Review-Notes/blob/master/Midterm1-Review/CSC148-Midterm1-review.md)
+- [Joey's UTM midterm review](https://github.com/wzy403/CSC148-Review-Notes/blob/master/Midterm1-Review/CSC148-Midterm1-review.md)
